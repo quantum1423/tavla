@@ -1,6 +1,6 @@
 package gopa
 
-// #cgo LDFLAGS: -Wl,-Bstatic -ljack -lm -lportaudio -Wl,-Bdynamic -lasound -lpthread
+// #cgo LDFLAGS: -ljack -lm -lportaudio --lasound -lpthread
 // #include <portaudio.h>
 import "C"
 import (
