@@ -31,14 +31,20 @@ func NewDecoder(sampleRate int, chanCount int) (dec *Decoder, err error) {
 
 // Decode decodes a single Opus frame to floating point format. Stereo
 // output will be interleaved. A null input frame indicates packet loss.
-func (dec *Decoder) Decode(frame []byte, pksize int) (pcm []float32, err error) {
+func (dec *Decoder) Decode(frame []byte, pksize int, isFec bool) (pcm []float32, err error) {
 	var input *C.uchar
 	if frame != nil {
 		input = (*C.uchar)(&frame[0])
 	}
+
+	isfNum := 0
+	if isFec {
+		isfNum = 1
+	}
+
 	pcm = make([]float32, pksize*dec.chcnt)
 	num := C.opus_decode_float(&dec.cee, input, C.opus_int32(len(frame)),
-		(*C.float)(&pcm[0]), C.int(pksize), 0)
+		(*C.float)(&pcm[0]), C.int(pksize), C.int(isfNum))
 	if num < 0 {
 		pcm = nil
 		err = ErrUnspecified
@@ -52,7 +58,6 @@ func (dec *Decoder) Decode(frame []byte, pksize int) (pcm []float32, err error) 
 		}
 		return
 	}
-	fmt.Println(num * C.int(dec.chcnt))
 	pcm = pcm[:num*C.int(dec.chcnt)]
 	return
 }

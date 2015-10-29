@@ -11,6 +11,10 @@ static int _opusSetBitrate(OpusEncoder *st, opus_int32 x) {
 static int _opusSetLoss(OpusEncoder *st, opus_int32 x) {
 	return opus_encoder_ctl(st, OPUS_SET_PACKET_LOSS_PERC(x));
 }
+
+static int _opusSetInbandFec(OpusEncoder *st, opus_int32 x) {
+	return opus_encoder_ctl(st, OPUS_SET_INBAND_FEC(x));
+}
 */
 import "C"
 import "errors"
@@ -76,6 +80,9 @@ func (enc *Encoder) SetExpectedPacketLoss(percent int) (err error) {
 	ecode := C._opusSetLoss(&enc.cee, C.opus_int32(percent))
 	if ecode != C.OPUS_OK {
 		err = ErrUnspecified
+	}
+	if percent != 0 {
+		C._opusSetInbandFec(&enc.cee, 1)
 	}
 	return
 }

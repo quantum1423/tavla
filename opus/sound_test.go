@@ -39,7 +39,7 @@ func TestSound(t *testing.T) {
 			default:
 				fmt.Println("Loss!")
 			}
-			toplay, err := dec.Decode(frm, 960)
+			toplay, err := dec.Decode(frm, 960, false)
 			if err != nil {
 				panic(err.Error())
 			}
